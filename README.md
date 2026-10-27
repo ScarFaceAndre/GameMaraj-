@@ -30,4 +30,15 @@ O vertical slice é uma representação condensada e simbólica da travessia do 
 
 Os personagens e lugares ainda são protótipos ficcionais. Nenhum NPC representa diretamente uma pessoa real.
 
+## Exportar
+
+No Godot, abra **Projeto > Exportar**, selecione **Windows 64-bit** ou **Linux 64-bit** e clique em **Exportar projeto**. Instale os templates de exportação quando o editor solicitar.
+
+Pela linha de comando:
+
+```bash
+godot --headless --path . --export-release "Windows 64-bit" build/windows/MarajoEntreAguas.exe
+godot --headless --path . --export-release "Linux 64-bit" build/linux/MarajoEntreAguas.x86_64
+```
+
 Consulte [a pesquisa inicial](docs/PESQUISA_INICIAL.md) e [a procedência cartográfica](docs/DADOS_CARTOGRAFICOS.md).
