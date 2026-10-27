@@ -1,0 +1,13 @@
+# Godot generated state
+.godot/
+
+# Exported builds and local save data
+build/
+export/
+*.log
+marajo_save.json
+
+# Operating-system and editor metadata
+.DS_Store
+Thumbs.db
+.vscode/
