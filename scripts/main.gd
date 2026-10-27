@@ -58,15 +58,25 @@ func _build_lighting() -> void:
 	add_child(sun)
 	var world := WorldEnvironment.new()
 	environment = Environment.new()
-	environment.background_mode = Environment.BG_COLOR
-	environment.background_color = Color("78a7b5")
-	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	var sky := Sky.new()
+	var sky_material := ProceduralSkyMaterial.new()
+	sky_material.sky_top_color = Color("397fa5")
+	sky_material.sky_horizon_color = Color("c9e2df")
+	sky_material.ground_bottom_color = Color("354637")
+	sky_material.ground_horizon_color = Color("c8c2a2")
+	sky_material.sun_angle_max = 18.0
+	sky_material.sun_curve = 0.08
+	sky.sky_material = sky_material
+	environment.sky = sky
+	environment.background_mode = Environment.BG_SKY
+	environment.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
+	environment.reflected_light_source = Environment.REFLECTION_SOURCE_SKY
 	environment.ambient_light_color = Color("dbe8d2")
 	environment.ambient_light_energy = 0.72
 	environment.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	environment.fog_enabled = true
 	environment.fog_light_color = Color("b7d6d8")
-	environment.fog_density = 0.0025
+	environment.fog_density = 0.0007
 	world.environment = environment
 	add_child(world)
 
@@ -90,8 +100,9 @@ func _build_player() -> void:
 	player.add_child(visual)
 	add_child(player)
 	var camera := Camera3D.new()
-	camera.position = Vector3(0, 13, 15)
-	camera.rotation_degrees = Vector3(-38, 0, 0)
+	camera.position = Vector3(0, 7.5, 10.5)
+	camera.rotation_degrees = Vector3(-27, 0, 0)
+	camera.fov = 68.0
 	player.add_child(camera)
 
 func _resolve_mission_interaction(mission: Dictionary) -> void:
@@ -127,10 +138,12 @@ func _update_world_time(delta: float) -> void:
 	sun.rotation_degrees.x = -8.0 - daylight * 62.0
 	sun.light_energy = 0.2 + daylight
 	environment.ambient_light_energy = 0.22 + daylight * 0.5
-	environment.background_color = Color("27364f").lerp(Color("78a7b5"), daylight)
+	var sky_material := environment.sky.sky_material as ProceduralSkyMaterial
+	sky_material.sky_top_color = Color("15213d").lerp(Color("397fa5"), daylight)
+	sky_material.sky_horizon_color = Color("8e6c62").lerp(Color("c9e2df"), daylight)
 	var closed_weather := int(GameState.world_minutes / 180.0) % 4 == 2
 	GameState.weather = "Tempo fechado" if closed_weather else "Céu aberto"
-	environment.fog_density = 0.008 if closed_weather else 0.0025
+	environment.fog_density = 0.0022 if closed_weather else 0.0007
 	hud.set_world_status(GameState.world_minutes, GameState.weather, GameState.reputation)
 
 func _save_session(show_message := true) -> void:
