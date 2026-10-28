@@ -12,6 +12,7 @@ var hud: CanvasLayer
 var sun: DirectionalLight3D
 var environment: Environment
 var boat: Node3D
+var camera: Camera3D
 var transition_active := false
 
 func _ready() -> void:
@@ -33,6 +34,7 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	_update_world_time(delta)
+	_update_camera(delta)
 	var mission: Dictionary = mission_manager.current_mission()
 	if mission.is_empty():
 		hud.set_prompt("")
@@ -99,11 +101,16 @@ func _build_player() -> void:
 	visual.material_override = _material(Color("9b3f58"))
 	player.add_child(visual)
 	add_child(player)
-	var camera := Camera3D.new()
+	camera = Camera3D.new()
 	camera.position = Vector3(0, 7.5, 10.5)
-	camera.rotation_degrees = Vector3(-27, 0, 0)
 	camera.fov = 68.0
-	player.add_child(camera)
+	add_child(camera)
+	camera.look_at(player.global_position + Vector3(0, 0.8, 0))
+
+func _update_camera(delta: float) -> void:
+	var desired_position := player.global_position + Vector3(0, 7.5, 10.5)
+	camera.global_position = camera.global_position.lerp(desired_position, minf(delta * 8.0, 1.0))
+	camera.look_at(player.global_position + Vector3(0, 0.8, 0), Vector3.UP)
 
 func _resolve_mission_interaction(mission: Dictionary) -> void:
 	if mission["id"] == "travessia":
